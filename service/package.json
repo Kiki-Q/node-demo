@@ -10,10 +10,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "formidable": "^1.2.2",
     "htmlparser": "^1.7.7",
     "koa": "^2.8.2",
     "koa-static": "^5.0.0",
     "mime": "^2.4.6",
+    "mysql": "^2.18.1",
     "request": "^2.88.2",
     "socket.io": "^2.3.0",
     "webpack": "^4.44.1"

@@ -1,6 +1,6 @@
 .DS_Store
-/service/node_modules/
-/service/dist/
+/node_modules/
+/dist/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -12,4 +12,4 @@ yarn-error.log*
 *.ntvs*
 *.njsproj
 *.sln
-/service/.history/
+/.history/
