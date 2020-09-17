@@ -1,0 +1,99 @@
+//添加照片提交路由定义
+let Photo = require('../models/Photo');//引入photo模型
+let path = require('path');
+let fs = require('fs');
+//引用path.join,这样你就可以用“path”命名变量
+let join  = path.join; 
+
+let submit = function(dir) {
+    return function(req, res, next) {
+        //默认为原来的文件名
+        let img = req.files.photo.image;
+        let name = req.body.photo.name || img.name;
+        let path = jion(dir, img.name);
+
+        //重命名文件
+        fs.rename(img.path, path, function(err) {
+            //委派错误
+            if(err) return next(err);
+
+            Photo.create({
+                name:name,
+                path:img.name
+            },function(err) {
+                //委派错误
+                if(err) return next(err);
+
+                res.redirect('/'); //重定向到首页
+            })
+        })
+    }
+}
+
+let photos = [];
+
+// //假数据
+// photos.push({
+//     name: 'Node.js Logo',
+//     path: './images/favicon.png'
+// });
+
+// photos.push({
+//     name: 'speaking',
+//     path: './images/favicon.png'
+// });
+
+// let list = function(req, res) {
+//     res.render('photos', {
+//         title: 'Photos',
+//         photos
+//     })
+// }
+
+
+//修改过的list路由
+let list = function(req, res, next) {
+    //{}查出photo集合中所有记录
+    Photo.find({}, function(err, photo) {
+        if (err) return next(err);
+        res.render('photos', {
+            title: 'Photos',
+            photos: photos
+        })
+    })
+}
+
+let form = function(req, res) {
+    res.render('photos/upload', {
+        title: 'Photo upload',
+    })
+}
+
+//照片下载路由
+let download = function(dir) {
+    //设定你要提供的文件所在的目录
+    return function(req, res, next) { //设定路由回调
+        let id = req.params.id;
+
+        //加载照片记录
+        Photo.findById(id, function(err, photo) {
+            if (err) return next(err);
+            //构造指向文件的绝对路径
+            let path = join(dir, photo.path);
+            res.download(path, photo.name + '.jpeg');
+            //传输文件
+            res.sendfile(path);
+        })
+    }
+}
+
+
+var express = require('express');
+var router = express.Router();
+
+router.get('/', list);
+router.get('/upload', form);
+// router.post('/upload', photos.submit(router.get('photos')));
+router.get('/photo/:id/download', photos.download(app.get('photos')))
+
+module.exports = router;
